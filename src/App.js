@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import axios from 'axios';
@@ -8,36 +7,95 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Link,
+  Redirect
 } from "react-router-dom";
 import Login from './Login';
 import Home from './Home';
-import Nav from './Nav';
 import SignUp from './SignUp';
-import SignOut from './SignOut';
 
 
 class App extends Component {
-  render() {
+
+  constructor() {
+    super();
+
+    this.user = JSON.parse(localStorage.getItem('user'));
+
+    this.state = {
+      isUserLogded: (this.user) ? true : false
+    }
+  }
+
+  logIn = (event, login, password) => {
+    event.preventDefault();
+
+    const user = {
+      username: login,
+      password: password,
+      ttl: 3600
+    }
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    }
+
+    axios.post('https://akademia108.pl/api/social-app/user/login',
+      JSON.stringify(user),
+      { 'headers': headers }
+    ).then((req) => {
+
+      console.log(req.data);
+
+      localStorage.setItem('user', JSON.stringify(req.data));
+      this.setState({ isUserLogded: true });
+    }).catch((error) => {
+      console.error(error);
+    })
+  }
+
+  signIn = (event, username, email, password) => {
+    const user = {
+      username, email, password
+    }
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
+  }
+
+    axios.post('https://akademia108.pl/api/social-app/user/signup',
+    JSON.stringify(user),
+    { 'headers': headers }
+  ).then((req) => {})
+}
+
+render() {
     return (
       <Router>
         <div className="App">
-          <Nav />
+          <nav>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              {!this.state.isUserLogded && <li><Link to="/login">Login</Link></li>}
+              {!this.state.isUserLogded && <li><Link to="/signup">Sign Up</Link></li>}
+              {!this.state.isUserLogded && <li><Link to="/">Sign Out</Link></li>}
+            </ul>
+          </nav>
           <Switch>
             <Route exact path="/">
               <Home />
             </Route>
             <Route path="/login">
-              <Login />
+              {this.state.isUserLogded ? <Redirect to="/" /> : <Login logInMethod={this.logIn} />}
             </Route>
             <Route path="/signUp">
-              <SignUp />
-            </Route>
-            <Route path="/signOut">
-              <SignOut />
+              {this.state.isUserLogded ? <Redirect to="/" /> : <SignUp signInMethod={this.signIn} />}
             </Route>
           </Switch>
-        </div>
-      </Router>
+        </div >
+      </Router >
     );
   }
 }

@@ -1,0 +1,8 @@
+{
+    // "window.zoomLevel": 1,
+    "editor.formatOnSave": true,
+    "cSpell.words": ["brandpartner", "selectedbrandpartner", "storefinder"],
+    "cSpell.diagnosticLevel": "Hint",
+    "workbench.editor.enablePreview": false
+  }
+  
