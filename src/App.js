@@ -92,7 +92,7 @@ class App extends Component {
                   <Link to="/signup">Sign Up</Link>
                 </li>
               )}
-              {!this.state.isUserLogded && (
+              {this.state.isUserLogded && (
                 <li>
                   <Link to="/">Sign Out</Link>
                 </li>
