@@ -24,6 +24,9 @@ const SignUp = (props) => {
     if (!user.password || user.password.length < 6) {
       errorMessages.password = 'Password wrong';
     }
+    if (user.passwordConf !== user.password) {
+      errorMessages.passwordConf = 'Password not matching';
+    }
     setErrors(errorMessages);
     if (!Object.keys(errorMessages).length) {
       props.signUp(e, user.username, user.email, user.password, user.passwordConf);
@@ -69,6 +72,7 @@ const SignUp = (props) => {
           type="password"
           placeholder="Potwierdź hasło"
         />
+        {errors.passwordConf && <p className="error">{errors.passwordConf}</p>}
         <button className="form-element" type="submit">
           Zarejestruj się
         </button>

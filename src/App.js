@@ -66,12 +66,25 @@ class App extends Component {
         console.log(req.data);
 
         localStorage.setItem('user', JSON.stringify(req.data));
-        this.setState({ isUserLogded: true });
+        this.setState({ isUserSignedUp: true });
       })
       .catch((error) => {
         console.error(error);
       });
   };
+
+  signOut = () => {
+
+    // axios
+    //   .post('https://akademia108.pl/api/social-app/user/signup', JSON.stringify(user), {
+    //     headers: headers,
+    //   })
+    //   .then((req) => {
+    //     console.log(req.data);
+
+    localStorage.removeItem('user');
+    this.setState({ isUserLogded: false });
+  }
 
   render() {
     return (
@@ -92,9 +105,9 @@ class App extends Component {
                   <Link to="/signup">Sign Up</Link>
                 </li>
               )}
-              {this.state.isUserLogded && (
+              {this.state.isUserSignedUp && (
                 <li>
-                  <Link to="/">Sign Out</Link>
+                  <Link to="/" >Sign Out</Link>
                 </li>
               )}
             </ul>
@@ -107,7 +120,10 @@ class App extends Component {
               {this.state.isUserLogded ? <Redirect to="/" /> : <Login logInMethod={this.logIn} />}
             </Route>
             <Route path="/signUp">
-              {this.state.isUserLogded ? <Redirect to="/" /> : <SignUp signUp={this.signUp} />}
+              {this.state.isUserSignedUp ? <Redirect to="/" /> : <SignUp signUp={this.signUp} />}
+            </Route>
+            <Route path="/signOut">
+
             </Route>
           </Switch>
         </div>
