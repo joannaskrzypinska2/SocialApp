@@ -1,25 +1,80 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function Signup(props) {
+const SignUp = (props) => {
+  const [user, setUser] = useState({});
+  const [errors, setErrors] = useState({});
 
-    const [userName, setUserName] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [setUserPassword, setUserEmail] = useState('');
-    const [userPasswordConf, setUserPasswordConf] = useState('');
+  //   const [userEmail, setUserEmail] = useState('');
+  //   const [UserPassword, setUserPassword] = useState('');
+  //   const [userPasswordConf, setUserPasswordConf] = useState('');
 
-    return (
-            <div class="signup-form">
-            <h3>Zarejestruj się do SocialApp</h3>
-            <form onSubmit={(e) =>props.signInMethod(e, userName, userEmail, userPassword, userPasswordConf)}>
-                <input onChange={(e) =>{setUserName(e.target.value)}} class="form-element" type="text" placeholder="Nazwa użytkownika" />
-                <input onChange={(e) =>{setUserEmail(e.target.value)}} class="form-element" type="text" placeholder="Adres email" />
-                <input onChange={(e) =>{setUserPassword(e.target.value)}} class="form-element" type="text" placeholder="Hasło" />
-                <input onChange={(e) =>{setUserPasswordConf(e.target.value)}} class="form-element" type="text" placeholder="Potwierdź hasło" />
-                <button class="form-element" type="submit">Zarejestruj się</button>
-            </form>
-        </div>
-    )
-}
+  const onChange = (userProp, value) => {
+    setUser({ ...user, [userProp]: value }); //using the current state => ...user, and the new data
+  };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    let errorMessages = {};
+    if (!user.username || user.username.length < 4 || user.username.indexOf(' ') > -1) {
+      errorMessages.username = 'Username wrong';
+    }
+    if (!user.email || user.email.indexOf(' ') > -1) {
+      errorMessages.email = 'Email wrong';
+    }
+    if (!user.password || user.password.length < 6) {
+      errorMessages.password = 'Password wrong';
+    }
+    setErrors(errorMessages);
+    if (!Object.keys(errorMessages).length) {
+      props.signUp(e, user.username, user.email, user.password, user.passwordConf);
+    }
+  };
+
+  return (
+    <div className="signup-form">
+      <h3>Zarejestruj się do SocialApp</h3>
+      <form onSubmit={onSubmit}>
+        <input
+          onChange={(e) => {
+            onChange('username', e.target.value);
+          }}
+          className="form-element"
+          type="text"
+          placeholder="Nazwa użytkownika"
+        />
+        {errors.username && <p className="error">{errors.username}</p>}
+        <input
+          onChange={(e) => {
+            onChange('email', e.target.value);
+          }}
+          className="form-element"
+          type="email"
+          placeholder="Adres email"
+        />
+        {errors.email && <p className="error">{errors.email}</p>}
+        <input
+          onChange={(e) => {
+            onChange('password', e.target.value);
+          }}
+          className="form-element"
+          type="password"
+          placeholder="Hasło"
+        />
+        {errors.password && <p className="error">{errors.password}</p>}
+        <input
+          onChange={(e) => {
+            onChange('passwordConf', e.target.value);
+          }}
+          className="form-element"
+          type="password"
+          placeholder="Potwierdź hasło"
+        />
+        <button className="form-element" type="submit">
+          Zarejestruj się
+        </button>
+      </form>
+    </div>
+  );
+};
 
 export default SignUp;

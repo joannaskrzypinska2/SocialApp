@@ -3,84 +3,100 @@ import './App.css';
 
 import axios from 'axios';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 import Login from './Login';
 import Home from './Home';
 import SignUp from './SignUp';
 
-
 class App extends Component {
-
   constructor() {
     super();
 
     this.user = JSON.parse(localStorage.getItem('user'));
 
     this.state = {
-      isUserLogded: (this.user) ? true : false
-    }
+      isUserLogded: this.user ? true : false,
+    };
   }
 
   logIn = (event, login, password) => {
-    event.preventDefault();
-
     const user = {
       username: login,
       password: password,
-      ttl: 3600
-    }
+      ttl: 3600,
+    };
 
     const headers = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    }
+      Accept: 'application/json',
+    };
 
-    axios.post('https://akademia108.pl/api/social-app/user/login',
-      JSON.stringify(user),
-      { 'headers': headers }
-    ).then((req) => {
+    axios
+      .post('https://akademia108.pl/api/social-app/user/login', JSON.stringify(user), {
+        headers: headers,
+      })
+      .then((req) => {
+        console.log(req.data);
 
-      console.log(req.data);
+        localStorage.setItem('user', JSON.stringify(req.data));
+        this.setState({ isUserLogded: true });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
-      localStorage.setItem('user', JSON.stringify(req.data));
-      this.setState({ isUserLogded: true });
-    }).catch((error) => {
-      console.error(error);
-    })
-  }
-
-  signIn = (event, username, email, password) => {
+  signUp = (event, username, email, password, passwordConf) => {
     const user = {
-      username, email, password
-    }
+      username,
+      email,
+      password,
+      passwordConf,
+    };
     const headers = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token
-  }
+      Accept: 'application/json',
+    };
 
-    axios.post('https://akademia108.pl/api/social-app/user/signup',
-    JSON.stringify(user),
-    { 'headers': headers }
-  ).then((req) => {})
-}
+    axios
+      .post('https://akademia108.pl/api/social-app/user/signup', JSON.stringify(user), {
+        headers: headers,
+      })
+      .then((req) => {
+        console.log(req.data);
 
-render() {
+        localStorage.setItem('user', JSON.stringify(req.data));
+        this.setState({ isUserLogded: true });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  render() {
     return (
       <Router>
         <div className="App">
           <nav>
             <ul>
-              <li><Link to="/">Home</Link></li>
-              {!this.state.isUserLogded && <li><Link to="/login">Login</Link></li>}
-              {!this.state.isUserLogded && <li><Link to="/signup">Sign Up</Link></li>}
-              {!this.state.isUserLogded && <li><Link to="/">Sign Out</Link></li>}
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              {!this.state.isUserLogded && (
+                <li>
+                  <Link to="/login">Login</Link>
+                </li>
+              )}
+              {!this.state.isUserLogded && (
+                <li>
+                  <Link to="/signup">Sign Up</Link>
+                </li>
+              )}
+              {!this.state.isUserLogded && (
+                <li>
+                  <Link to="/">Sign Out</Link>
+                </li>
+              )}
             </ul>
           </nav>
           <Switch>
@@ -91,11 +107,11 @@ render() {
               {this.state.isUserLogded ? <Redirect to="/" /> : <Login logInMethod={this.logIn} />}
             </Route>
             <Route path="/signUp">
-              {this.state.isUserLogded ? <Redirect to="/" /> : <SignUp signInMethod={this.signIn} />}
+              {this.state.isUserLogded ? <Redirect to="/" /> : <SignUp signUp={this.signUp} />}
             </Route>
           </Switch>
-        </div >
-      </Router >
+        </div>
+      </Router>
     );
   }
 }
